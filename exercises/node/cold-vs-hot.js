@@ -6,10 +6,11 @@ let starts = 0;
 
 const cold = new Observable(observer => {
   starts++; // side effect to count starts
-  /*
-    Add code here to make your observable.
-    Try sync and async flavors.
-  */
+  setTimeout(() => {
+    observer.next(starts);
+    observer.complete();
+  });
+
 });
 
 /*
@@ -19,6 +20,8 @@ for example:
 
 const hot = ????;
 */
+
+const hot = cold.share();
 
 console.log('subscribing to `cold` twice:');
 cold.subscribe(x => console.log('next', x));

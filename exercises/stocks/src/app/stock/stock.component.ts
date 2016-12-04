@@ -19,7 +19,8 @@ export class StockComponent implements OnInit {
   get data$() {
     /* use the stockServer service to get your ticker stream here. */
     const { ticker } = this;
-    return Observable.timer(0, 1000).map(() => ({ ticker, value: Math.random() * 1000 }));
+    return this.stockServer.getTicker(ticker)
+      .map((response: any) => response.value);
   }
 
   constructor(private stockServer: StockServerService) { }

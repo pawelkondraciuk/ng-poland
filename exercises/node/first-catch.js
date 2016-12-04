@@ -11,6 +11,8 @@ Observable.of(1, 2, 3, 4)
   // add a catch block that handles the error and
   // emits `"error handled"` to the subscriber.
   // .catch(????)
+  .catch((err) => Observable.of("error handled"))
+  // .defaultIfEmpty(() => Observable.throw("asd"))
   .subscribe(
     x => console.log(x),
     err => console.error(err),

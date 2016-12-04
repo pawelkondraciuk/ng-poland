@@ -10,10 +10,16 @@ export class StockServerService {
     /* Add code to use a multiplexed web socket to get a stream
       of updates from `ws://localhost:8080`. You can run the example-server from
       the root directory of the repo: `node example-server/app.js` */
-    return Observable.timer(0, 1000).map(() => ({ ticker, value: Math.random() * 1000 }));
+    // return Observable.timer(0, 1000).map(() => ({ ticker, value: Math.random() * 1000 }));
+    return this.socket.multiplex(
+      () => JSON.stringify({type: 'sub', ticker}),
+      () => JSON.stringify({type: 'unsub', ticker}),
+      x => x.ticker === ticker
+    )
   }
 
 
-  constructor() {
+  constructor(private factory: WebSocketSubjectFactoryService) {
+    this.socket = factory.create("ws://localhost:8080");
   }
 }

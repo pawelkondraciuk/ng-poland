@@ -5,12 +5,23 @@ var Observable = Rx.Observable;
 
 let sync = new Observable(observer => {
   /* synchronously emit 1, 2, 3 from this observable */
-
+  
+  observer.next(1);
+  observer.next(2);
+  observer.next(3);
+  observer.complete()
 });
 
 let async = new Observable(observer => {
   /* asynchronously emit 1, 2, 3 from this observable */
 
+  let timer = setTimeout(() => {
+    observer.next(1);
+    observer.next(2);
+    observer.next(3);
+    observer.complete()
+  });
+  return () => clearTimeout(timer);
 });
 
 

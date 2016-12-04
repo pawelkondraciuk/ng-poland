@@ -4,7 +4,18 @@ import { Http, Response } from '@angular/http';
 
 @Component({
   selector: 'app-stock-lookup',
-  template: `<div>stock-lookup works</div>`,
+  template: `<div>
+    <input #foo type="text" (keyup)="keyup$.next(foo.value)" />
+    <ul>
+      <li *ngFor="let suggestion of suggestions">
+        <button (click)="addTicker(suggestion)">{{ suggestion }}</button>
+      </li>
+    </ul>
+    <div *ngFor="let ticker of tickers; let i = index">
+      <button (click)="removeTicker(i)">Remove</button>
+      <app-stock [ticker]="ticker"></app-stock>
+    </div>
+  </div>`,
 
   styles: []
 })
@@ -18,13 +29,25 @@ export class StockLookupComponent implements OnInit, OnDestroy {
 
   error: string = null;
 
+  subscription: Subscription;
+
+  keyup$ = new Subject();
+
+  constructor(private http: Http) {
+    
+  }
 
 
-  get suggestion$() {
+  get suggestion$() : Observable<string[]> {
     /*
       This should return an observable of suggestions for an auto complete.
     */
-    return Observable.empty(); // replace me
+    return this.keyup$
+      .debounceTime(2000)
+      .switchMap( q => 
+        this.http.get('http://localhost:8080/suggest/' + q)
+          .map(response => response.json())
+      );
   }
 
   clearSuggestions() {
@@ -41,8 +64,14 @@ export class StockLookupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.subscription = this.suggestion$.subscribe(suggestions => {
+      this.suggestions = suggestions;
+    });
   }
 
   ngOnDestroy() {
+    if(this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }

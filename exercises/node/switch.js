@@ -10,3 +10,10 @@ const source = Observable.concat(
 // Create an interval for each arriving value, and play only the most recently
 // created observable.
 
+source
+  .switchMap(value => Observable.interval(100).mapTo(value))
+  .subscribe(
+    (value) => console.log(value),
+    (err) => console.log(err),
+    () => console.log('done')
+  )
